@@ -1,8 +1,11 @@
 from tkinter import *
+from tkinter import messagebox
 import time
 import settings
 import utils
 from cell import Cell
+from scoreboard import ScoreSave
+from scorewindow import ScoresWindow
 
 root = Tk()
 
@@ -47,6 +50,7 @@ def measure_time(root, timer):
     time_string = f'{hours:02d}:{minutes:02d}:{seconds:02d}'
     timer['text'] = time_string
     settings.TIME += 1
+    settings.time_elapsed = settings.TIME
     root.after(1000, measure_time, root, timer)
 
 timer = Label(
@@ -57,6 +61,27 @@ timer = Label(
 )
 timer.place(x=310, y=10)
 
+def show_scores():
+    scoreboard = ScoreSave('scores.txt')
+    scores = scoreboard.load_scores()
+
+    if scores is not None:
+        scores_window = ScoresWindow(scores)
+
+
+scores_button = Button(
+    left_frame,
+    width=12,
+    height=4,
+    font=('',15),
+    text="Scores",
+    command=show_scores,
+    bd=0,
+    bg='LightSkyBlue1',
+    activebackground='LightSkyBlue4'
+)
+scores_button.place(x=10, y=150)
+
 #Tworzenie komórek
 for x in range(settings.GRID_SIZE):
     for y in range(settings.GRID_SIZE):
@@ -66,7 +91,6 @@ for x in range(settings.GRID_SIZE):
             column=x,
             row=y
         )
-
 
 #Wywołanie lbl z klasy Cell
 Cell.create_cell_count_label(left_frame)

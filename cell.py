@@ -1,12 +1,12 @@
 from tkinter import Button, Label, messagebox
-from scoreboard import Scoreboard
+from scoreboard import ScoreSave
 import random
 import settings
 import ctypes
 import sys
 import time
 
-scoreboard = Scoreboard('scores.txt')
+scoreboard = ScoreSave('scores.txt')
 
 class Cell:
     mines = []
@@ -26,7 +26,7 @@ class Cell:
         btn = Button(
             location,
             width=12,
-            height=4,
+            height=4
         )
         btn.bind('<Button-1>', self.left_click)
         btn.bind('<Button-3>', self.right_click)
@@ -40,6 +40,9 @@ class Cell:
             width=12,
             height=4,
             font=('',15),
+            bd=0,
+            bg='LightSkyBlue1',
+            activebackground='LightSkyBlue4',
             text=f'Cells left: {Cell.cell_count}'
         )
         Cell.cell_count_label_object = lbl
@@ -56,10 +59,18 @@ class Cell:
             if Cell.cell_count == settings.MINES_COUNT:
                 self.cell_button_obj.after(500, self.display_win_message)
 
+    @staticmethod
+    def format_time(seconds):
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        seconds = seconds % 60
+        time_string = f'{hours:02d}:{minutes:02d}:{seconds:02d}'
+        return time_string
+
     def display_win_message(self):
         ctypes.windll.user32.MessageBoxW(0, 'Congratulations, you won!', 'Game Over', 0)
-        name = input("Enter your name: ")  
-        time_elapsed = time.time() - settings.TIME  
+        name = input("Enter your name: ")
+        time_elapsed = self.format_time(settings.time_elapsed)
         scoreboard.add_score(name, time_elapsed)
         sys.exit()
 
